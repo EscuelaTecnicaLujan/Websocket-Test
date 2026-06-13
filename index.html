@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat en Tiempo Real</title>
+</head>
+<body>
+    <h2>Mi Chat</h2>
+    <!-- Aquí se mostrarán los mensajes -->
+    <ul id="mensajes"></ul>
+
+    <!-- Formulario para enviar mensajes -->
+    <form id="formulario">
+        <input type="text" id="mensajeInput" placeholder="Escribe tu mensaje..." required>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        // 1. Nos conectamos al servidor WebSocket
+        // En producción usa 'wss://' en lugar de 'ws://'
+        const socket = new WebSocket('ws://localhost:8080');
+
+        // 2. Al recibir un mensaje del servidor, lo mostramos en pantalla
+        socket.onmessage = function(evento) {
+            const listaMensajes = document.getElementById('mensajes');
+            const nuevoMensaje = document.createElement('li');
+            nuevoMensaje.textContent = evento.data;
+            listaMensajes.appendChild(nuevoMensaje);
+        };
+
+        // 3. Al enviar el formulario, mandamos el texto al servidor
+        const formulario = document.getElementById('formulario');
+        formulario.addEventListener('submit', function(evento) {
+            evento.preventDefault(); // Evita que la página se recargue
+            const input = document.getElementById('mensajeInput');
+            
+            socket.send(input.value); // Enviamos el mensaje al servidor
+            input.value = ''; // Limpiamos la caja de texto
+        });
+    </script>
+</body>
+</html>
